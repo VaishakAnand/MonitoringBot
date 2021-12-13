@@ -28,16 +28,14 @@ const checkPrice = async () => {
             (elem) => elem[0].textContent
         );
         await browser.close();
-        
+
         let float = val.substring(0, val.length - 1);
         console.log(float);
         return parseFloat(float.replace(/,/g, ''));
-
     } catch (error) {
         await browser.close();
         throw error;
     }
 };
 
-checkPrice();
 module.exports = checkPrice;
