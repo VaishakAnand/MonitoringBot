@@ -12,11 +12,11 @@ const check = async (ctx) => {
             return;
         }
 
-        let price = await priceCheckFn();
+        let [percentage, price] = await priceCheckFn();
         let message = `Retrieval Time: ${getNormalTime()}\n\n`;
 
-        if (price > 0) {
-            message += `Percentage: <b>${price}</b>`;
+        if (percentage > 0) {
+            message += `Percentage: ${percentage}\nPrice: ${price}`;
             if (messageId == null && !plsStop) {
                 await bot.telegram
                     .sendMessage(ctx.chat.id, message, {
@@ -39,8 +39,8 @@ const check = async (ctx) => {
                     )
                     .catch((err) => console.error(err));
             }
-            if (price <= fallFloor) {
-                let alertMessage = `<b>ALERT</b> @Vforvitagen\nPercentage: ${price}`;
+            if (percentage <= fallFloor) {
+                let alertMessage = `<b>ALERT</b> @Vforvitagen\nPercentage: ${percentage}`;
 
                 await bot.telegram
                     .sendMessage(ctx.chat.id, alertMessage, {
@@ -48,8 +48,6 @@ const check = async (ctx) => {
                     })
                     .catch((err) => console.error(err));
             }
-        } else {
-            console.log('Error in price');
         }
 
         setImmediate(() => check(ctx));

@@ -27,11 +27,17 @@ const checkPrice = async () => {
             '#headlessui-disclosure-button-11 > div > div.flex.flex-col.items-end.justify-center > div.font-bold.flex.justify.items-center.text-righttext-high-emphesis',
             (elem) => elem[0].textContent
         );
-        await browser.close();
 
         let float = val.substring(0, val.length - 1);
-        console.log(float);
-        return parseFloat(float.replace(/,/g, ''));
+
+        let price = await page.$$eval(
+            'div.pl-3.text-primary.text-bold',
+            (elem) => elem[0].textContent
+        );
+
+        console.log(float, price);
+        await browser.close();
+        return [parseFloat(float.replace(/,/g, '')), price];
     } catch (error) {
         await browser.close();
         throw error;
