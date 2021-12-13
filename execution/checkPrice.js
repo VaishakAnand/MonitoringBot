@@ -19,9 +19,16 @@ const checkPrice = async () => {
         await page.goto('https://wannaswap.finance/farm', {
             waitUntil: 'networkidle2',
         });
-        await page.waitForSelector(
-            '#headlessui-disclosure-button-11 > div > div.flex.flex-col.items-end.justify-center > div.font-bold.flex.justify.items-center.text-righttext-high-emphesis'
-        );
+
+        try {
+            await page.waitForSelector(
+                '#headlessui-disclosure-button-11 > div > div.flex.flex-col.items-end.justify-center > div.font-bold.flex.justify.items-center.text-righttext-high-emphesis'
+            );
+        } catch (error) {
+            await browser.close();
+            console.error(error);
+            return [0, null];
+        }
 
         let val = await page.$$eval(
             '#headlessui-disclosure-button-11 > div > div.flex.flex-col.items-end.justify-center > div.font-bold.flex.justify.items-center.text-righttext-high-emphesis',
