@@ -4,7 +4,8 @@ const getNormalTime = require('../util/datetime');
 
 let plsStop = false;
 let messageId = null;
-let fallFloor = 1000;
+let percentageFallFloor = 500;
+let priceFloor = 1.5;
 
 const check = async (ctx) => {
     try {
@@ -39,8 +40,19 @@ const check = async (ctx) => {
                     )
                     .catch((err) => console.error(err));
             }
-            if (percentage <= fallFloor) {
-                let alertMessage = `<b>ALERT</b> @Vforvitagen\nPercentage: ${percentage}`;
+
+            if (percentage <= percentageFallFloor) {
+                let alertMessage = `<b>PERCENTAGE ALERT</b> @Vforvitagen\nPercentage: ${percentage}`;
+
+                await bot.telegram
+                    .sendMessage(ctx.chat.id, alertMessage, {
+                        parse_mode: 'HTML',
+                    })
+                    .catch((err) => console.error(err));
+            }
+
+            if (price <= priceFloor) {
+                let alertMessage = `<b>PRICE ALERT</b> @Vforvitagen\nPrice: ${price}`;
 
                 await bot.telegram
                     .sendMessage(ctx.chat.id, alertMessage, {
@@ -62,20 +74,39 @@ bot.command('/check', async (ctx) => {
     check(ctx);
 });
 
-bot.command('/alert', async (ctx) => {
-    console.log('Setting floor');
+bot.command('/percentagealert', async (ctx) => {
+    console.log('Setting percentage floor');
     const args = ctx.update.message.text.split(' ');
     if (args.length != 2) {
         bot.telegram.sendMessage(
             ctx.chat.id,
-            'Please input the correct format!\nE.g: /alert 1000',
+            'Please input the correct format!\nE.g: /percentagealert 500',
             {}
         );
     } else {
-        fallFloor = parseFloat(args[1]);
+        percentageFallFloor = parseFloat(args[1]);
         bot.telegram.sendMessage(
             ctx.chat.id,
-            `Set the alert floor to ${fallFloor}`,
+            `Set the percentage alert floor to ${percentageFallFloor}`,
+            {}
+        );
+    }
+});
+
+bot.command('/pricealert', async (ctx) => {
+    console.log('Setting price floor');
+    const args = ctx.update.message.text.split(' ');
+    if (args.length != 2) {
+        bot.telegram.sendMessage(
+            ctx.chat.id,
+            'Please input the correct format!\nE.g: /pricealert 2.1',
+            {}
+        );
+    } else {
+        priceFloor = parseFloat(args[1]);
+        bot.telegram.sendMessage(
+            ctx.chat.id,
+            `Set the price alert floor to ${priceFloor}`,
             {}
         );
     }
